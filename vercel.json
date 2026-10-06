@@ -13,7 +13,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy-Report-Only",
-          "value": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob: https://*.tile.openstreetmap.org https://gdzackzkjwqxwnroqpre.supabase.co; font-src 'self'; connect-src 'self' https://gdzackzkjwqxwnroqpre.supabase.co wss://gdzackzkjwqxwnroqpre.supabase.co; worker-src 'self'; manifest-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests"
+          "value": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob: https://*.tile.openstreetmap.org https://xqycurmzpbvshexbtdzj.supabase.co; font-src 'self'; connect-src 'self' https://xqycurmzpbvshexbtdzj.supabase.co wss://xqycurmzpbvshexbtdzj.supabase.co; worker-src 'self'; manifest-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests"
         },
         {
           "key": "Strict-Transport-Security",
