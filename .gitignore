@@ -33,3 +33,6 @@ supabase/signing_keys.json
 
 # local test credentials (generated)
 scripts/.dev-users.json
+
+.vercel
+.env*

@@ -1,0 +1,12 @@
+# never upload local secrets, test logins or local tooling to Vercel
+.env
+.env.*
+!.env.example
+scripts/.dev-users.json
+supabase/.temp
+supabase/.branches
+node_modules
+dist
+tests
+docs
+.claude
