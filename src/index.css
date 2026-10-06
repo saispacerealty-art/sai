@@ -1,0 +1,105 @@
+@import 'tailwindcss';
+
+/* Sai Space brand tokens (from reality-crm sample) — use as bg-navy, text-gold-dark, etc. */
+@theme {
+  --font-sans: 'Inter Variable', -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+
+  --color-navy: #0b1f3a;
+  --color-navy-dark: #071527;
+  --color-navy-soft: #102b50;
+  --color-gold: #c08a25;
+  --color-gold-dark: #9c6e17;
+  --color-gold-light: #f0cb78;
+  --color-gold-tint: #fbf1dd;
+
+  --color-canvas: #fafafa;
+  --color-panel: #ffffff;
+  --color-line: #e7e7ec;
+  --color-ink: #1b1b23;
+  --color-ink-dim: #6b6b76;
+  --color-ink-faint: #9797a3;
+  --color-col: #f5f5f8;
+
+  --color-ok-bg: #dcf6e8;
+  --color-ok: #0f7a44;
+  --color-warn-bg: #fdebcb;
+  --color-warn: #a15c00;
+  --color-bad-bg: #fbe2e2;
+  --color-bad: #b23434;
+
+  --color-online: #25c281;
+  --color-idle: #f2a93b;
+  --color-offline: #b5b5c0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+/* ---------- login skyline (Sample 1) ---------- */
+.sky-glow {
+  background: linear-gradient(135deg, #081a33, #102b50, #1c3a66, #0d234a);
+  background-size: 300% 300%;
+  animation: sky-move 18s ease infinite;
+}
+@keyframes sky-move {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.twinkle {
+  fill: var(--color-gold);
+  animation: twinkle 4s ease-in-out infinite;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.12; }
+  50% { opacity: 0.95; }
+}
+.float-icon {
+  opacity: 0.16;
+  animation: float-icon 9s ease-in-out infinite;
+}
+@keyframes float-icon {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-26px) rotate(6deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- live-tracking map pins (class-based: no inline HTML/styles, CSP-safe) ---------- */
+.crm-pin {
+  border-radius: 9999px;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.18), 0 2px 6px rgb(0 0 0 / 0.3);
+  background: var(--color-offline);
+}
+.crm-pin-online { background: var(--color-online); }
+.crm-pin-idle { background: var(--color-idle); }
+.crm-pin-offline { background: var(--color-offline); }
+.crm-pin-office { background: var(--color-gold); border-radius: 4px; }
+.crm-pin-selected { box-shadow: 0 0 0 3px var(--color-navy), 0 2px 8px rgb(0 0 0 / 0.35); }
+.crm-trail { stroke: var(--color-navy); stroke-width: 3; stroke-opacity: 0.55; stroke-dasharray: 2 7; stroke-linecap: round; fill: none; }
+.leaflet-container { font-family: var(--font-sans); background: #e9edf2; }
