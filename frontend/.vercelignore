@@ -1,0 +1,6 @@
+# never upload local secrets or build leftovers to Vercel (deploy from the frontend/ folder)
+.env
+.env.*
+!.env.example
+node_modules
+dist

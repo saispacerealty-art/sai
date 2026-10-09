@@ -10,6 +10,8 @@ Time needed: about 45 minutes.
 - Node.js (already installed on this PC)
 - Optional: a domain such as `crm.saispacerealty.com`
 
+**Folders:** run every `npx supabase …` command inside the `backend` folder (`cd backend`), and every website command (`npx vercel …`) inside the `frontend` folder. Commands starting with `node frontend/…` or `node backend/…` run from the top folder.
+
 ## 1. Create the Supabase project
 
 1. supabase.com → **New project** → name `sai-space-crm` → region **Mumbai (ap-south-1)**.
@@ -32,7 +34,7 @@ This applies all the migrations: schema, encryption keys (created inside Supabas
 ```bash
 npx supabase config push
 ```
-This applies the auth settings from `supabase/config.toml`: no public sign-up, password rules, authenticator-app two-step verification for Owner/Admin.
+This applies the auth settings from `backend/supabase/config.toml`: no public sign-up, password rules, authenticator-app two-step verification for Owner/Admin.
 
 Check in the dashboard → Authentication → Sign In / Providers that **"Allow new users to sign up" is OFF** and **Email provider is ON**.
 
@@ -68,7 +70,7 @@ Copy the two values (`crm_data_key_v1`, `crm_index_key`) into your password mana
 In the dashboard → Project Settings → API, reveal the `service_role` key, then in this folder run (PowerShell):
 
 ```powershell
-$env:SUPABASE_URL = "https://<project-ref>.supabase.co"; $env:SUPABASE_SERVICE_ROLE_KEY = "<paste service_role key>"; node scripts/create-owner.mjs
+$env:SUPABASE_URL = "https://<project-ref>.supabase.co"; $env:SUPABASE_SERVICE_ROLE_KEY = "<paste service_role key>"; node backend/scripts/create-owner.mjs
 ```
 
 It asks for a username, your name, your mobile number (optional) and a password. Close that terminal afterwards so the key is not left in its history.
@@ -79,9 +81,9 @@ Hosting on Amazon Web Services instead? Follow [DEPLOY-AWS.md](DEPLOY-AWS.md) fo
 
 1. Put the Supabase host into the security headers:
    ```bash
-   node scripts/set-csp.mjs <project-ref>
+   node frontend/scripts/set-csp.mjs <project-ref>
    ```
-2. Push this folder to a **private** GitHub repository and import it in Vercel (framework: Vite).
+2. Push this folder to a **private** GitHub repository and import it in Vercel (framework: Vite, **Root Directory: `frontend`**). Or deploy from this computer: `cd frontend`, then `npx vercel deploy --prod`.
 3. In Vercel → Project → Settings → Environment Variables add:
    - `VITE_SUPABASE_URL` = `https://<project-ref>.supabase.co`
    - `VITE_SUPABASE_ANON_KEY` = the anon / publishable key
@@ -108,7 +110,7 @@ curl -i -X POST https://<project-ref>.supabase.co/functions/v1/login -H "Origin:
 
 5. After 3–5 days with no CSP reports in the browser console of normal use, enforce the policy and redeploy:
    ```bash
-   node scripts/set-csp.mjs <project-ref> --enforce
+   node frontend/scripts/set-csp.mjs <project-ref> --enforce
    ```
 
 ## 8. Connecting lead sources
@@ -135,5 +137,5 @@ curl -X POST "https://<project-ref>.supabase.co/functions/v1/lead-intake?id=<web
 |---|---|
 | Rotate the encryption key (yearly, or if a leak is suspected) | SQL Editor: `select private.rotate_data_key();` then back up the new `crm_data_key_v<N>` as in step 4 |
 | Owner/Admin lost or changed their phone | Dashboard → Authentication → Users → the user → remove their MFA factor. At the next sign-in they scan a new QR code with the new phone. (Ask them to set it up again straight away.) |
-| Update the app | Pull the new code, `npx supabase db push`, `npx supabase functions deploy …`, redeploy on Vercel |
+| Update the app | Pull the new code; in `backend/`: `npx supabase db push`, `npx supabase functions deploy …`; redeploy the website (`git push` for Amplify, or `npx vercel deploy --prod` in `frontend/`) |
 | Run the tests | `npm run test:db` (no setup needed) · local stack: `npm run db:start`, `npm run functions`, `npm run db:seed`, `npm run test:e2e` |

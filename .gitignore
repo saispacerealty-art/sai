@@ -23,16 +23,15 @@ dist-ssr
 *.sln
 *.sw?
 
-# Env & secrets
+# Env & secrets (any folder)
 .env
 .env.*
 !.env.example
-supabase/.temp
-supabase/.branches
-supabase/signing_keys.json
+backend/supabase/.temp
+backend/supabase/.branches
+backend/supabase/signing_keys.json
 
 # local test credentials (generated)
-scripts/.dev-users.json
+backend/scripts/.dev-users.json
 
 .vercel
-.env*

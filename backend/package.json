@@ -1,0 +1,30 @@
+{
+  "name": "sai-space-crm-backend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Supabase backend: database migrations, Edge Functions, admin scripts and tests",
+  "scripts": {
+    "db:start": "supabase start",
+    "db:reset": "supabase db reset",
+    "db:lint": "supabase db lint --level warning",
+    "db:push": "supabase db push",
+    "config:push": "supabase config push",
+    "functions": "supabase functions serve --env-file supabase/functions/.env",
+    "functions:deploy": "supabase functions deploy login admin-users change-password upload-document lead-intake",
+    "db:seed": "node --env-file=.env.scripts.local scripts/seed-dev.mjs",
+    "logins": "node scripts/dev-logins.mjs",
+    "create-owner": "node scripts/create-owner.mjs",
+    "test:db": "node tests/db/01-foundation.test.mjs && node tests/db/02-workflow.test.mjs && node tests/db/03-rotation.test.mjs && node tests/db/04-totp-mfa.test.mjs",
+    "test:e2e": "node --env-file=.env.scripts.local tests/e2e/api.test.mjs && node --env-file=.env.scripts.local tests/e2e/realtime.test.mjs && node --env-file=.env.scripts.local tests/e2e/totp-mfa.test.mjs",
+    "lint": "oxlint --deny-warnings scripts tests supabase/functions"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.117.2"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
+    "oxlint": "^1.81.0",
+    "supabase": "^2.118.0"
+  }
+}
