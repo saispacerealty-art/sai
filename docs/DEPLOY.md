@@ -75,6 +75,8 @@ It asks for a username, your name, your mobile number (optional) and a password.
 
 ## 6. Deploy the website (Vercel)
 
+Hosting on Amazon Web Services instead? Follow [DEPLOY-AWS.md](DEPLOY-AWS.md) for this step and come back for step 7.
+
 1. Put the Supabase host into the security headers:
    ```bash
    node scripts/set-csp.mjs <project-ref>

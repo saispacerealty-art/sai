@@ -5,7 +5,7 @@ Real-estate CRM: leads, projects and units, site visits, bookings and payments, 
 React + Vite + TypeScript + Tailwind on the front, Supabase (Postgres, Auth, Storage, Realtime, Edge Functions) behind it.
 
 - **Plan, decisions and build status:** [PLAN.md](PLAN.md)
-- **Going live:** [docs/DEPLOY.md](docs/DEPLOY.md)
+- **Going live:** [docs/DEPLOY.md](docs/DEPLOY.md) (Vercel) or [docs/DEPLOY-AWS.md](docs/DEPLOY-AWS.md) (AWS Amplify)
 
 ## Run it on this computer
 
