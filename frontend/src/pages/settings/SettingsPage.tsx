@@ -10,8 +10,9 @@ import { getPosition } from '../../lib/geo'
 import { FLAGS, MODULES, type PermKey, type RolePreset } from '../../lib/perms'
 import { supabase } from '../../lib/supabase'
 import { useRolePresets } from '../employees/data'
+import { MailTab } from './MailTab'
 
-type Tab = 'company' | 'leads' | 'roles' | 'webhooks' | 'audit'
+type Tab = 'company' | 'leads' | 'roles' | 'webhooks' | 'mail' | 'audit'
 
 export function SettingsPage() {
   const [tab, setTab] = useState<Tab>('company')
@@ -25,6 +26,7 @@ export function SettingsPage() {
             { key: 'leads', label: 'Lead options' },
             { key: 'roles', label: 'Role defaults' },
             { key: 'webhooks', label: 'Lead webhooks' },
+            { key: 'mail', label: 'Email' },
             { key: 'audit', label: 'Audit log' },
           ]}
           value={tab}
@@ -35,6 +37,7 @@ export function SettingsPage() {
       {tab === 'leads' && <LeadOptionsTab />}
       {tab === 'roles' && <RolesTab />}
       {tab === 'webhooks' && <WebhooksTab />}
+      {tab === 'mail' && <MailTab />}
       {tab === 'audit' && <AuditTab />}
     </>
   )

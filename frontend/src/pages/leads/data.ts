@@ -39,7 +39,7 @@ export function useLeads() {
 
 export interface TimelineItem {
   id: number
-  type: 'note' | 'call' | 'whatsapp' | 'stage' | 'assign' | 'visit' | 'import' | 'booking' | 'system'
+  type: 'note' | 'call' | 'whatsapp' | 'stage' | 'assign' | 'visit' | 'import' | 'booking' | 'system' | 'email'
   body: string | null
   meta: Record<string, unknown>
   created_by: string | null

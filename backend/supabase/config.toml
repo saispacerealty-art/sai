@@ -432,6 +432,9 @@ verify_jwt = true
 [functions.upload-document]
 verify_jwt = true
 
+[functions.mail]
+verify_jwt = true
+
 # Called by other servers with a per-source secret / HMAC signature, not a user session.
 [functions.lead-intake]
 verify_jwt = false

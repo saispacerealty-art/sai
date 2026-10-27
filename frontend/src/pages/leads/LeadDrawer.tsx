@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query'
-import { ArrowRightLeft, CalendarPlus, Eye, Handshake, MapPin, MessageCircle, Phone, PhoneCall, StickyNote, UserRoundCheck, XCircle } from 'lucide-react'
+import { ArrowRightLeft, CalendarPlus, Eye, Handshake, Mail, MapPin, MessageCircle, Phone, PhoneCall, StickyNote, UserRoundCheck, XCircle } from 'lucide-react'
 import { useState } from 'react'
 import { useAuth } from '../../auth/AuthProvider'
 import { useToast } from '../../components/Toast'
@@ -8,11 +8,12 @@ import { rpc, usePeople, useProjects } from '../../lib/data'
 import { budgetRange, fmtDateTime, STAGES, stageOf, timeAgo, toLocalInput, type StageKey } from '../../lib/format'
 import { BookingForm } from '../bookings/BookingForm'
 import { ScheduleVisitModal } from '../visits/ScheduleVisitModal'
+import { SendEmailModal } from './SendEmailModal'
 import { revealContact, useLeads, useTimeline, useUpdateLead, type Contact, type Lead, type TimelineItem } from './data'
 
 const ICONS: Record<TimelineItem['type'], typeof Phone> = {
   note: StickyNote, call: PhoneCall, whatsapp: MessageCircle, stage: ArrowRightLeft, assign: UserRoundCheck,
-  visit: MapPin, import: ArrowRightLeft, booking: Handshake, system: ArrowRightLeft,
+  visit: MapPin, import: ArrowRightLeft, booking: Handshake, system: ArrowRightLeft, email: Mail,
 }
 
 function describe(a: TimelineItem, personName: Map<string, string>): string {
@@ -40,6 +41,7 @@ export function LeadDrawer({ leadId, onClose, onLost }: { leadId: string; onClos
   const [savingNote, setSavingNote] = useState(false)
   const [visiting, setVisiting] = useState(false)
   const [booking, setBooking] = useState(false)
+  const [emailing, setEmailing] = useState(false)
   const readOnly = can('read_only')
   const personName = new Map((people.data ?? []).map((p) => [p.id, p.full_name]))
 
@@ -201,6 +203,11 @@ export function LeadDrawer({ leadId, onClose, onLost }: { leadId: string; onClos
                 <CalendarPlus className="size-3.5" /> Schedule visit
               </Button>
             )}
+            {can('leads') && (
+              <Button size="sm" variant="outline" onClick={() => setEmailing(true)}>
+                <Mail className="size-3.5" /> Send email
+              </Button>
+            )}
             {can('bookings') && lead.stage !== 'booked' && lead.stage !== 'lost' && (
               <Button size="sm" variant="outline" onClick={() => setBooking(true)}>
                 <Handshake className="size-3.5" /> Book a unit
@@ -250,6 +257,7 @@ export function LeadDrawer({ leadId, onClose, onLost }: { leadId: string; onClos
         )}
       </Drawer>
       {visiting && <ScheduleVisitModal lead={lead} onClose={() => setVisiting(false)} />}
+      {emailing && <SendEmailModal lead={lead} onClose={() => setEmailing(false)} />}
       {booking && <BookingForm lead={lead} onClose={() => setBooking(false)} />}
     </>
   )

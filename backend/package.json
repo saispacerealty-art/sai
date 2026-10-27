@@ -11,11 +11,11 @@
     "db:push": "supabase db push",
     "config:push": "supabase config push",
     "functions": "supabase functions serve --env-file supabase/functions/.env",
-    "functions:deploy": "supabase functions deploy login admin-users change-password upload-document lead-intake",
+    "functions:deploy": "supabase functions deploy login admin-users change-password upload-document lead-intake mail",
     "db:seed": "node --env-file=.env.scripts.local scripts/seed-dev.mjs",
     "logins": "node scripts/dev-logins.mjs",
     "create-owner": "node scripts/create-owner.mjs",
-    "test:db": "node tests/db/01-foundation.test.mjs && node tests/db/02-workflow.test.mjs && node tests/db/03-rotation.test.mjs && node tests/db/04-totp-mfa.test.mjs",
+    "test:db": "node tests/db/01-foundation.test.mjs && node tests/db/02-workflow.test.mjs && node tests/db/03-rotation.test.mjs && node tests/db/04-totp-mfa.test.mjs && node tests/db/05-mail.test.mjs",
     "test:e2e": "node --env-file=.env.scripts.local tests/e2e/api.test.mjs && node --env-file=.env.scripts.local tests/e2e/realtime.test.mjs && node --env-file=.env.scripts.local tests/e2e/totp-mfa.test.mjs",
     "lint": "oxlint --deny-warnings scripts tests supabase/functions"
   },
