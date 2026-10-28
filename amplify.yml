@@ -9,7 +9,7 @@ applications:
       phases:
         preBuild:
           commands:
-            - nvm install 22 && nvm use 22
+            - nvm install 22 --skip-default-packages && nvm use 22
             - node -v
             - test -n "$VITE_SUPABASE_URL" && test -n "$VITE_SUPABASE_ANON_KEY" || (echo "Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in Amplify environment variables" && exit 1)
             - npm ci
