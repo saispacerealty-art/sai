@@ -5,7 +5,7 @@ import { Alert, Button, Card, Field, Input, Loading } from '../../components/ui'
 import { callFn } from '../../lib/api'
 import { rpc } from '../../lib/data'
 
-interface MailAccount {
+export interface MailAccount {
   from_name: string
   from_email: string
   smtp_host: string
@@ -19,7 +19,9 @@ export function MailTab() {
   return account.isLoading ? <Loading /> : <MailForm initial={account.data ?? null} />
 }
 
-function MailForm({ initial }: { initial: MailAccount | null }) {
+export function MailForm({ initial, mine = false }: { initial: MailAccount | null; mine?: boolean }) {
+  const suffix = mine ? '_mine' : ''
+  const queryKey = [mine ? 'my-mailbox' : 'mail-account']
   const toast = useToast()
   const qc = useQueryClient()
   const [f, setF] = useState({
@@ -36,12 +38,27 @@ function MailForm({ initial }: { initial: MailAccount | null }) {
   async function run(action: 'test' | 'save') {
     setBusy(action)
     try {
-      await callFn('mail', { action, ...f })
+      await callFn('mail', { action: action + suffix, ...f })
       if (action === 'save') {
         set({ password: '' })
-        void qc.invalidateQueries({ queryKey: ['mail-account'] })
+        void qc.invalidateQueries({ queryKey })
+        void qc.invalidateQueries({ queryKey: ['mail-sender'] })
       }
       toast(action === 'save' ? 'Mailbox saved' : 'Connection works', 'ok')
+    } catch (e) {
+      toast((e as Error).message, 'bad')
+    } finally {
+      setBusy(null)
+    }
+  }
+
+  async function remove() {
+    setBusy('save')
+    try {
+      await callFn('mail', { action: 'delete_mine' })
+      void qc.invalidateQueries({ queryKey })
+      void qc.invalidateQueries({ queryKey: ['mail-sender'] })
+      toast('Mailbox removed', 'ok')
     } catch (e) {
       toast((e as Error).message, 'bad')
     } finally {
@@ -52,7 +69,9 @@ function MailForm({ initial }: { initial: MailAccount | null }) {
   return (
     <Card className="max-w-3xl">
       <p className="mb-4 text-sm text-ink-dim">
-        Connect the company mailbox. Staff can then email leads from the lead page, and every email is logged on that lead&apos;s timeline. Works with any provider that
+        {mine
+          ? 'Connect your own mailbox. Emails you send to leads then go out from your own address and are logged on the lead's timeline. Without one, the company mailbox is used.'
+          : 'Connect the company mailbox.'}{' '} Staff can then email leads from the lead page, and every email is logged on that lead&apos;s timeline. Works with any provider that
         offers SMTP (Gmail, Outlook, Zoho, your own domain).
       </p>
       <Alert tone="warn">
@@ -81,6 +100,11 @@ function MailForm({ initial }: { initial: MailAccount | null }) {
         </Field>
       </div>
       <div className="mt-5 flex justify-end gap-2">
+        {mine && initial && (
+          <Button variant="outline" disabled={busy !== null} onClick={remove}>
+            Remove
+          </Button>
+        )}
         <Button variant="outline" loading={busy === 'test'} disabled={busy !== null} onClick={() => run('test')}>
           Test connection
         </Button>

@@ -1,5 +1,8 @@
 // POST { action: 'save' | 'test', from_name, from_email, host, port, user, password? } -> { ok }   (Settings permission)
+// POST { action: 'save_mine' | 'test_mine', from_name, from_email, host, port, user, password? } -> { ok }   (leads permission; own mailbox)
+// POST { action: 'delete_mine' }                                                       -> { ok }
 // POST { action: 'send', lead_id, subject, body }                                      -> { ok }   (leads permission + lead visibility)
+//   'send' goes out from the caller's own mailbox when they have one, otherwise from the company mailbox.
 // The only code that sees the mailbox password. Checks, in order: caller identity ->
 // permission (RLS-aware RPCs as the caller) -> input limits -> rate limit -> SMTP.
 import nodemailer from 'npm:nodemailer@6'
@@ -63,8 +66,13 @@ Deno.serve(async (req) => {
     const { data: allowed } = await admin.rpc('svc_mail_allow', { p_actor: me })
     if (allowed !== true) return json(req, { error: 'Email limit reached (30 per hour). Try again later.' }, 429)
 
-    const [{ data: creds }, { data: target }] = await Promise.all([admin.rpc('svc_mail_credentials'), admin.rpc('svc_lead_mail_target', { p_lead: leadId })])
-    if (!creds) return json(req, { error: 'Email is not set up yet. Ask an Admin to connect a mailbox in Settings.' }, 409)
+    const [{ data: mine }, { data: company }, { data: target }] = await Promise.all([
+      admin.rpc('svc_user_mail_credentials', { p_actor: me }),
+      admin.rpc('svc_mail_credentials'),
+      admin.rpc('svc_lead_mail_target', { p_lead: leadId }),
+    ])
+    const creds = mine ?? company
+    if (!creds) return json(req, { error: 'Email is not set up yet. Connect your mailbox from your profile menu, or ask an Admin to connect the company mailbox.' }, 409)
     if (!target?.email || !EMAIL.test(target.email)) return json(req, { error: 'This lead has no email address' }, 422)
 
     try {
@@ -82,10 +90,19 @@ Deno.serve(async (req) => {
     return json(req, { ok: true })
   }
 
-  // ---------- connect / test the company mailbox ----------
-  if (b.action === 'save' || b.action === 'test') {
-    const { data: may } = await caller.rpc('can_manage_mail')
+  // ---------- connect / test a mailbox: the company one (Settings) or the caller's own ----------
+  const mineAction = b.action === 'save_mine' || b.action === 'test_mine' || b.action === 'delete_mine'
+  if (b.action === 'save' || b.action === 'test' || mineAction) {
+    const personal = mineAction
+    const { data: may } = await caller.rpc(personal ? 'can_use_mailbox' : 'can_manage_mail')
     if (may !== true) return json(req, { error: 'You do not have permission to change mail settings' }, 403)
+
+    if (b.action === 'delete_mine') {
+      const { error } = await admin.rpc('svc_delete_user_mailbox', { p_actor: me })
+      return error ? json(req, { error: 'Could not remove the mailbox' }, 500) : json(req, { ok: true })
+    }
+    const verb = b.action === 'save' || b.action === 'save_mine' ? 'save' : 'test'
+    const storedCreds = () => (personal ? admin.rpc('svc_user_mail_credentials', { p_actor: me }) : admin.rpc('svc_mail_credentials'))
 
     const c: Creds = {
       from_name: clean(b.from_name, 80),
@@ -102,13 +119,13 @@ Deno.serve(async (req) => {
 
     // leaving the password blank keeps the stored one
     if (!c.password) {
-      const { data: stored } = await admin.rpc('svc_mail_credentials')
+      const { data: stored } = await storedCreds()
       if (!stored?.password) return json(req, { error: 'Enter the mailbox password' }, 400)
       c.password = stored.password
-      if (b.action === 'save') c.password = ''
+      if (verb === 'save') c.password = ''
     }
 
-    if (b.action === 'test') {
+    if (verb === 'test') {
       try {
         await transport(c).verify()
         return json(req, { ok: true })
@@ -126,7 +143,7 @@ Deno.serve(async (req) => {
         return json(req, { error: 'Could not sign in to the mail server. Check the server, port, username and password.' }, 422)
       }
     }
-    const { error } = await admin.rpc('svc_save_mail_account', {
+    const { error } = await admin.rpc(personal ? 'svc_save_user_mailbox' : 'svc_save_mail_account', {
       p_actor: me, p_from_name: c.from_name, p_from_email: c.from_email, p_host: c.host, p_port: c.port, p_user: c.user, p_password: c.password,
     })
     if (error) return json(req, { error: error.code === '22023' ? error.message : 'Could not save the mail settings' }, 500)

@@ -1,8 +1,9 @@
-import { useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useToast } from '../../components/Toast'
 import { Button, Field, Input, Modal, Textarea } from '../../components/ui'
 import { callFn } from '../../lib/api'
+import { rpc } from '../../lib/data'
 import type { Lead } from './data'
 
 export function SendEmailModal({ lead, onClose }: { lead: Lead; onClose: () => void }) {
@@ -10,6 +11,7 @@ export function SendEmailModal({ lead, onClose }: { lead: Lead; onClose: () => v
   const qc = useQueryClient()
   const [subject, setSubject] = useState('')
   const [body, setBody] = useState(`Hello ${lead.name.split(' ')[0]},\n\n\n\nRegards,\nSai Space Realty`)
+  const sender = useQuery({ queryKey: ['mail-sender'], queryFn: () => rpc<{ from_email: string; source: string } | null>('mail_sender') })
   const [sending, setSending] = useState(false)
 
   async function send() {
@@ -29,6 +31,9 @@ export function SendEmailModal({ lead, onClose }: { lead: Lead; onClose: () => v
   return (
     <Modal open title={`Email ${lead.name}`} onClose={onClose} wide>
       <div className="flex flex-col gap-4">
+        <p className="text-sm text-ink-dim">
+          From: <b>{sender.data ? `${sender.data.from_email} (${sender.data.source === 'personal' ? 'your mailbox' : 'company mailbox'})` : 'no mailbox connected yet'}</b>
+        </p>
         <Field label="Subject">{(id) => <Input id={id} value={subject} maxLength={200} onChange={(e) => setSubject(e.target.value)} />}</Field>
         <Field label="Message" hint="Sent to the email address on the lead. Logged on the timeline (stored encrypted).">
           {(id) => <Textarea id={id} rows={9} value={body} maxLength={10000} onChange={(e) => setBody(e.target.value)} />}

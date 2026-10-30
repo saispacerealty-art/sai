@@ -20,6 +20,7 @@ import { LeadsPage } from './pages/leads/LeadsPage'
 import { NotAllowed } from './pages/Placeholders'
 import { ProjectDetailPage } from './pages/projects/ProjectDetailPage'
 import { ProjectsPage } from './pages/projects/ProjectsPage'
+import { MyMailboxPage } from './pages/settings/MyMailboxPage'
 import { SettingsPage } from './pages/settings/SettingsPage'
 import { TasksPage } from './pages/tasks/TasksPage'
 import { VisitsPage } from './pages/visits/VisitsPage'
@@ -85,6 +86,7 @@ function Gate() {
           <Route key={n.to} path={n.to === '/' ? undefined : n.to.slice(1)} index={n.to === '/'} element={<Guard perm={n.perm}>{PAGES[n.to]}</Guard>} />
         ))}
         <Route path="projects/:id" element={<Guard perm="projects"><ProjectDetailPage /></Guard>} />
+        <Route path="account/mailbox" element={<MyMailboxPage />} />
         <Route path="account/password" element={<ChangePasswordPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>

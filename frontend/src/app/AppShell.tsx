@@ -1,4 +1,4 @@
-import { Bell, KeyRound, LogOut, Menu, MonitorSmartphone, Search, X } from 'lucide-react'
+import { Bell, KeyRound, LogOut, Mail, Menu, MonitorSmartphone, Search, X } from 'lucide-react'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthProvider'
@@ -162,6 +162,7 @@ function UserMenu() {
       </button>
       {open && (
         <div role="menu" className="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-xl border border-line bg-panel py-1 shadow-xl">
+          <MenuItem icon={Mail} label="My mailbox" onClick={() => navigate('/account/mailbox')} />
           <MenuItem icon={KeyRound} label="Change password" onClick={() => navigate('/account/password')} />
           <MenuItem icon={MonitorSmartphone} label="Log out all devices" onClick={() => void logout(true)} />
           <MenuItem icon={LogOut} label="Log out" onClick={() => void logout()} />
